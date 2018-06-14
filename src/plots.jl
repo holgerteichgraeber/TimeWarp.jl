@@ -29,7 +29,8 @@ end
 @recipe function f(h::DTWPlot)
     seq1, seq2, D, i1, i2 = h.args
     n1, n2 = length(seq1), length(seq2)
-
+    xmax=max(maximum(seq1),maximum(seq2))  
+    xmin=min(minimum(seq1),minimum(seq2))
     # set up the subplots
     legend --> false
     link := :both
@@ -39,18 +40,18 @@ end
         _  c
     ]
 
-    left_margin --> 0mm
-    bottom_margin --> 0mm
-    top_margin --> 0mm
-    right_margin --> 0mm
-    clim --> (0,3*D[end,end])
+    left_margin --> 3mm
+    bottom_margin --> 3mm
+    top_margin --> 1mm
+    right_margin --> 1mm
+    clim --> (0,maximum(D[find(D.<Inf)]))
     colorbar --> :right
     
     # heatmap
     @series begin
         seriestype := :heatmap
         formatter --> (z)->""
-        c --> :viridis
+        c --> :plasma
         subplot := 2
         D
     end
@@ -70,12 +71,16 @@ end
     # left line plot
     @series begin
         subplot := 1
+        xlims := ( xmin,xmax)
+        ylabel := "hour (January 24, 2015)"
         seq2, 1:n2
     end
     
     # bottom line plot
     @series begin
         subplot := 3
+        xlabel := "hour (January 23, 2015)"
+        ylims := (xmin,xmax)
         1:n1, seq1
     end
 end

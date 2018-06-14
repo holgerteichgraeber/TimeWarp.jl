@@ -109,6 +109,46 @@ function dtw_cost_matrix{N,T,U<:Integer}(
     return D
 end
 
+ #### non cumulative cost matrix computation
+function dtw_cost_matrix_nonc{N,T,U<:Integer}(
+        seq1::Sequence{N,T},
+        seq2::Sequence{N,T},
+        i2min::AbstractVector{U},
+        i2max::AbstractVector{U},
+        dist::SemiMetric = SqEuclidean()
+    )
+    m = length(seq2) # of rows in cost matrix
+    n = length(seq1) # of columns in cost matrix
+    n == length(i2min) || throw(ArgumentError("i2min does not match length of seq1."))
+    n == length(i2max) || throw(ArgumentError("i2max does not match length of seq1."))
+    1 == i2min[1] || throw(ArgumentError("i2min must start at 1."))
+    m == i2max[end] || throw(ArgumentError("i2max must end at length(seq2)."))
+
+    # Build the (n x m) cost matrix into a WindowedMatrix, because it's ragged.
+    # That type gives efficient storage with convenient [r,c] indexing and returns
+    # Inf when accessed outside the window.
+    D = WindowedMatrix(i2min, i2max, Inf)
+    D_nonc = WindowedMatrix(i2min, i2max, Inf)
+
+    # First column first
+    D[1,1] = evaluate(dist, seq1[1], seq2[1])
+    D_nonc[1,1] = evaluate(dist, seq1[1], seq2[1])
+    for r=2:i2max[1]
+        D[r,1] = D[r-1,1]  + evaluate(dist, seq1[1], seq2[r])
+        D_nonc[r,1] =  evaluate(dist, seq1[1], seq2[r])
+    end
+
+    # Complete the cost matrix from columns 2 to m.
+    for c=2:n
+        for r=i2min[c]:i2max[c]
+            best_neighbor_cost = min(D[r-1,c], D[r-1,c-1], D[r,c-1])
+            D[r,c] = best_neighbor_cost + evaluate(dist, seq1[c], seq2[r])
+            D_nonc[r,c] =  evaluate(dist, seq1[c], seq2[r])
+        end
+    end
+
+    return D_nonc
+end
 ########################################
 #  Find Best Path through Cost Matrix  #
 ########################################

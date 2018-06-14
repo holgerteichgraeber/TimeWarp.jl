@@ -20,6 +20,7 @@ export Sequence,
        dba,
        dbaclust,
        dtw_cost_matrix,
+       dtw_cost_matrix_nonc,
        DBAResult,
        fastdtw
 
