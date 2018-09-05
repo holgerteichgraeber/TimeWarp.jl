@@ -43,7 +43,7 @@ end
     left_margin --> 3mm
     bottom_margin --> 3mm
     top_margin --> 1mm
-    right_margin --> 1mm
+    right_margin --> 3mm
     clim --> (0,maximum(D[find(D.<Inf)]))
     colorbar --> :right
     
@@ -51,7 +51,7 @@ end
     @series begin
         seriestype := :heatmap
         formatter --> (z)->""
-        c --> :plasma
+        c --> :viridis
         subplot := 2
         D
     end
@@ -72,14 +72,14 @@ end
     @series begin
         subplot := 1
         xlims := ( xmin,xmax)
-        ylabel := "hour (January 24, 2015)"
+        ylabel := "hour (January 31, 2015)"
         seq2, 1:n2
     end
     
     # bottom line plot
     @series begin
         subplot := 3
-        xlabel := "hour (January 23, 2015)"
+        xlabel := "hour (February 4, 2015)"
         ylims := (xmin,xmax)
         1:n1, seq1
     end
